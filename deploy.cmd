@@ -102,6 +102,8 @@ call :SelectNodeVersion
 echo Installing npm packages
 
 pushd "%DEPLOYMENT_TARGET%"
+call npm install
+call :ExecuteCmd !NPM_CMD! install --production
 
 FOR /F %%d in ('DIR /a:d /B') DO ( 
     pushd %%d
