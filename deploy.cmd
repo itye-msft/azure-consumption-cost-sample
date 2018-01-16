@@ -110,7 +110,7 @@ FOR /F %%d in ('DIR /a:d /B') DO (
         Echo Installing packages for %%d
         call npm install 
 
-      call :ExecuteCmd !NPM_CMD! install --production
+      :: call :ExecuteCmd !NPM_CMD! install --production
       IF !ERRORLEVEL! NEQ 0 goto error
     )
 
