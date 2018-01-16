@@ -5,11 +5,8 @@ author: ityer
 ---
 https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fitye-msft%2Fazure-consumption-cost-sample%2Fmaster%2Fazuredeploy.json
 
-function is disabled
-new function for execl
-connect to UI
 
-# Node.js Azure Function for generating SAS tokens
+# Node.js Azure Function for calculating your subscription cost
 
 This is a sample HTTP trigger Azure Function that returns consumption cost per subscription.
 
