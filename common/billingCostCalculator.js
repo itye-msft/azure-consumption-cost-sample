@@ -86,7 +86,7 @@ module.exports = class BillingCostCalculator {
                             .then(consumption => {
 
                                 //now we have the consumption and rates. we can calculate the detailed cost.
-                                var result = utils.computeDetailedConsumption(consumption, rates, filter);
+                                var result = consumptionUtils.computeDetailedConsumption(consumption, rates, filter);
                                 return result;
                             })
                             .catch(error => {
