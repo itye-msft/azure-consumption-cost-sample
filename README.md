@@ -19,6 +19,7 @@ This sample uses 2 [Azure Commerce APIs](https://docs.microsoft.com/en-us/azure/
 The automated deployment provisions an Azure Storage account and an Azure Function in a Dynamic compute plan and sets up deployment from source control. 
 
 When you setup the Azure Function, you will be requested to supply information and credentials to initialize the function. This is a one time step. Make sure you have in hand:
+
 | Name | Type |  Description |
 | --- | ---- | --- |
 | clientId | string | Your service principal ID |
@@ -36,6 +37,7 @@ Once the template is deployed, 2 functions will be created:
 2. `download-consumtion-cost`: The function will use the provided credentials and parameters to login into Azure, pull both Rate and Consumption data and calculate a detailed report of the actual cost of each resource, based on the rates and consumption. The result is a `csv` files which can be downloaded from the function.
 
 ***Optional parameters:***
+
 | Name | Type |  Description |
 | --- | ---- | --- |
 | detailed | bool | true if the consumption info should contain details. Optional. relevant only for `get-consumption-cost-node` |
