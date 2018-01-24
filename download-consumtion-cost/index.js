@@ -1,5 +1,6 @@
 // An HTTP trigger Azure Function that returns billing consumption
 var BillingCostCalculator = require('../common/billingCostCalculator');
+var json2csv = require('json2csv');
 
 function getCreds() {
     return {
@@ -16,8 +17,7 @@ function getParams(req) {
         filter: req.body && req.body.filter ? req.body : '',
         granularity: req.body && req.body.granularity ? req.body.granularity : 'Daily',
         startDate: req.body && req.body.startDate ? new Date(req.body.startDate) : null,
-        endDate: req.body && req.body.endDate ? new Date(req.body.endDate) : null,
-        detailed: req.body && req.body.detailed ? req.body.detailed == 'true' : false
+        endDate: req.body && req.body.endDate ? new Date(req.body.endDate) : null
     }
 }
 
@@ -27,9 +27,16 @@ module.exports = function(context, req) {
     
     var params = getParams(req);
     
-    costCalculator.getCost(context, params.filter, params.granularity, params.startDate, params.endDate, params.detailed)
+    costCalculator.getDetailedReport(context, params.filter, params.granularity, params.startDate, params.endDate)
     .then(res => {
-        context.res = res;
+        var csv = res.length == 0 ? "" : json2csv({ data: res });
+        context.res = {
+            body: csv,
+            headers: {
+                'Content-Type': 'application/octet-stream',
+                'Content-disposition': 'attachment; filename=azure_consumptions.csv'
+            }
+        };
         context.done();
     })
     .catch(error=>{

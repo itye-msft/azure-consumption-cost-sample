@@ -72,15 +72,17 @@ module.exports = class BillingCostCalculator {
                         resourceGroup: string
                     }
      */
-    getDetailedReport(filter, granularity = 'Daily', startDate = null, endDate = null) {
+    getDetailedReport(context, filter, granularity = 'Daily', startDate = null, endDate = null) {
         return commerceUtils.login(this.clientId, this.clientSecret, this.tenantId)
             .then(credentials => {
-                console.log("Login successful");
-                console.log("pulling rates...");
-                commerceUtils.getRates(credentials, this.subscriptionId, this.offerId)
+
+                context.log("Login successful");
+                context.log("pulling rates...");
+                return commerceUtils.getRates(credentials, this.subscriptionId, this.offerId)
                     .then(rates => {
-                        console.log("pulling consumption...");
-                        commerceUtils.getConsumption(credentials, this.subscriptionId, startDate, endDate, granularity)
+
+                        context.log("pulling consumption...");
+                        return commerceUtils.getConsumption(credentials, this.subscriptionId, startDate, endDate, granularity)
                             .then(consumption => {
 
                                 //now we have the consumption and rates. we can calculate the detailed cost.
@@ -88,15 +90,15 @@ module.exports = class BillingCostCalculator {
                                 return result;
                             })
                             .catch(error => {
-                                console.dir(error);
+                                context.log(error);
                             });
                     })
                     .catch(error => {
-                        console.dir(error);
+                        context.log(error);
                     });
             })
             .catch(error => {
-                console.dir(error);
+                context.log(error);
             });
     }
 }
