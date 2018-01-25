@@ -11,8 +11,20 @@ author: ityer
 This code sample demonstrates how to use Azure billing commerce APIs to find consumption cost per subscription and resource-group.
 We will use HTTP trigger Azure Function to execute the code.
 
+## The problem
+The [Billing API](https://docs.microsoft.com/en-us/javascript/api/overview/azure/billing?view=azure-node-2.2.0) and the [Consumption API](https://docs.microsoft.com/en-us/javascript/api/overview/azure/consumption?view=azure-node-2.2.0) don't expose the cost of your consumption.
+Some functions are also not available for sponsored accounts. If you want to find the accurate cost of a consumption, you will have to use the Commerce APIs.
 
-This sample uses 2 [Azure Commerce APIs](https://docs.microsoft.com/en-us/azure/billing/billing-usage-rate-card-overview) to calculate the consumption cost for an Azure subscription. Results can be filtered by resource group or resource tags. The Node.js code makes use of the [Azure node.js SDKs](https://github.com/Azure/azure-sdk-for-node/tree/master/lib/services/commerce).
+## Explaining the solution
+This sample uses 2 [Azure Commerce APIs](https://docs.microsoft.com/en-us/azure/billing/billing-usage-rate-card-overview) to calculate the consumption cost for an Azure subscription. 
+
+There are 4 steps to extract the cost:
+1. Authenticate to Azure and obtain the `Credentials` object.
+2. Use the `Credentials` object to pull `rateCards` which are the rates set up for the given account. Rate are also called `Meters`.
+3. Use the `Credentials` object to pull `Consumption` data for each resource in the given subscription. Each consumption listing contains the `Meter ID` from the rate cards. Consumption provides you with a quantity per meterID. 
+4. The last step is to multiply the rate value with the consumption quantity. This is the `cost`.
+
+Results can be filtered by resource group or resource tags. The Node.js code makes use of the [Azure node.js SDKs](https://github.com/Azure/azure-sdk-for-node/tree/master/lib/services/commerce).
 
 ## Deploy the sample to Azure
 
