@@ -6,17 +6,27 @@ author: ityer
 [![Deploy to Azure](http://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fitye-msft%2Fazure-consumption-cost-sample%2Fmaster%2Fazuredeploy.json)
 
 
-# Node.js Azure Function for calculating your subscription cost
+# On-demand calculation of Azure consumption cost
 
 This code sample demonstrates how to use Azure billing commerce APIs to find consumption cost per subscription and resource-group.
-We will use HTTP trigger Azure Function to execute the code.
+We will use an Azure Function to execute the code.
 
-## The problem
-The [Billing API](https://docs.microsoft.com/en-us/javascript/api/overview/azure/billing?view=azure-node-2.2.0) and the [Consumption API](https://docs.microsoft.com/en-us/javascript/api/overview/azure/consumption?view=azure-node-2.2.0) don't expose the cost of your consumption.
-Some functions are also not available for sponsored accounts. If you want to find the accurate cost of a consumption, you will have to use the Commerce APIs.
+## The challenge
+
+The [Billing API](https://docs.microsoft.com/en-us/javascript/api/overview/azure/billing?view=azure-node-2.2.0) and the [Consumption API](https://docs.microsoft.com/en-us/javascript/api/overview/azure/consumption?view=azure-node-2.2.0) don't expose the cost of the  consumption. Instead they only expose the ability to interact with past invoices (which is not service an on-demand need), or receive consumption quantities without cost.
+
+For example, you will be able to tell that some subscription had 5 compute hours, but the cost is not present, nor the price per compute unit.
+
+In addition, some functions are also not available for sponsored accounts.
+
 
 ## Explaining the solution
-This sample uses 2 [Azure Commerce APIs](https://docs.microsoft.com/en-us/azure/billing/billing-usage-rate-card-overview) to calculate the consumption cost for an Azure subscription. 
+
+[Azure Commerce APIs](https://docs.microsoft.com/en-us/azure/billing/billing-usage-rate-card-overview)  provides 2 functions:
+1.	Resource usage. This will give you consumption data for an Azure subscription.
+2.	Resource RateCard. This will give price and metadata information for resources used in an Azure subscription. It contains mainly a price for each meter. 
+
+This solution simply ties all the edges to calculate the actual cost under a single wrapper. 
 
 There are 4 steps to extract the cost:
 1. Authenticate to Azure and obtain the `Credentials` object.
@@ -59,7 +69,9 @@ Once the template is deployed, 2 functions will be created:
 | granularity | string | Can be: "Daily" or "Hourly". Optional. Default is Daily. |
 
 The paramaters are sent as `json` in the body of the POST request.
-For example:
+
+### Calling the function
+Example of calling the function:
 ```sh
 curl -H "Content-Type: application/json" -X POST -d '{"filter":"resource-group-name","detailed":"true"}' https://<function-name>.azurewebsites.net/api/get-consumption-cost-node?code=<code>
 ```
@@ -70,9 +82,13 @@ curl -H "Content-Type: application/json" -X POST -d '{"filter":"resource-group-n
 
 ***The response***
 
-Is an object in the form of:
+Is an object in the form of: 
+
+`{ total: (Number, the total cost), details: (Key-Value pairs of resource and cost)}`
+
+For example:
 ```javascript
- { total: (Number, the total cost), details: (Key-Value pairs of resource and cost)}. For example: { total: 10.3, details: { res1:5, res2: 5.3}}
+{ total: 10.3, details: { res1:5, res2: 5.3}}
 ```
 
 ## Learn more
