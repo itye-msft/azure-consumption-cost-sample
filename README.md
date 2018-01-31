@@ -44,17 +44,17 @@ When you setup the Azure Function, you will be requested to supply information a
 
 | Name | Type |  Description |
 | --- | ---- | --- |
-| clientId | string | Your service principal ID |
+| clientId | string | Your service principal ID. [Create a service princiapl](https://docs.microsoft.com/en-us/azure/azure-stack/azure-stack-create-service-principals) |
 | clientSecret | string | Your service principal secret |
-| tenantId | string | Your subscription tenant ID |
-| subscriptionId | string | Subscription ID to pull consumption info for |
+| tenantId | string | Your subscription tenant ID. [Find the tenant ID](https://stackoverflow.com/questions/26384034/how-to-get-the-azure-account-tenant-id) |
+| subscriptionId | string | Subscription ID to pull consumption info for. [Find the subscription ID](https://blogs.msdn.microsoft.com/mschray/2016/03/18/getting-your-azure-subscription-guid-new-portal/) |
 | offerId | string | Must be specific code taken from [Microsoft Azure Offer Details](https://azure.microsoft.com/en-us/support/legal/offer-details/)
 
 The deployment template has a parameter `manualIntegration` which controls whether or not a deployment trigger is registered with GitHub. Use `true` if you are deploying from the main Azure-Samples repo (does not register hook), `false` otherwise (registers hook). Since a value of `false` registers the deployment hook with GitHub, deployment will fail if you don't have write permissions to the repo.
-Iy you want to deploy it from your own repo, make sure your account is [authorized GitHub.com](https://github.com/blog/2056-automating-code-deployment-with-github-and-azure), otherwise, it will fail with authentication error.  
+If you want to deploy it from your own repo, make sure your account is [authorized GitHub.com](https://github.com/blog/2056-automating-code-deployment-with-github-and-azure), otherwise, it will fail with authentication error.  
 
 ## Calling the function
-Once the template is deployed, 2 functions will be created:
+Once the template is deployed, 2 functions will be created under the `App service`:
 1. `get-consumption-cost-node`: The function will use the provided credentials and parameters to login into Azure, pull both Rate and Consumption data and calculate the actual cost, based on the rates and consumption.
 2. `download-consumtion-cost`: The function will use the provided credentials and parameters to login into Azure, pull both Rate and Consumption data and calculate a detailed report of the actual cost of each resource, based on the rates and consumption. The result is a `csv` files which can be downloaded from the function.
 
@@ -70,10 +70,10 @@ Once the template is deployed, 2 functions will be created:
 
 The paramaters are sent as `json` in the body of the POST request.
 
-### Calling the function
-Example of calling the function:
+### Executing the function
+Example of calling the ‘get-consumption-cost-node’ function (replace values with your deployment info):
 ```sh
-curl -H "Content-Type: application/json" -X POST -d '{"filter":"resource-group-name","detailed":"true"}' https://<function-name>.azurewebsites.net/api/get-consumption-cost-node?code=<code>
+curl -H "Content-Type: application/json" -X POST -d '{"filter":"<resource-group-name>","detailed":"true"}' https://<app-service-name>.azurewebsites.net/api/get-consumption-cost-node?code=<code>
 ```
 
 > If the function will be called from a mobile client or a JavaScript web app, we recommend that you add authentication to your Function using [App Service Authentication/Authorization](https://azure.microsoft.com/en-us/documentation/articles/app-service-authentication-overview/). The API key is usually insufficent for security purposes since it can be discovered by sniffing traffic or decompiling the client app.
