@@ -71,7 +71,7 @@ Once the template is deployed, two functions are created under the `App service`
 
 The parameters are sent as `json` in the body of the POST request.
 
-### Executing the function
+### Executing the `get-consumption-cost-node` function
 The following code listing is an example of calling the `get-consumption-cost-node` function (make sure to replace values with your deployment info):
 ```sh
 curl -H "Content-Type: application/json" -X POST -d '{"filter":"<resource-group-name>","detailed":"true"}' https://<app-service-name>.azurewebsites.net/api/get-consumption-cost-node?code=<code>
@@ -91,6 +91,29 @@ For example:
 ```javascript
 { total: 10.3, details: { res1:5, res2: 5.3}}
 ```
+
+### Executing the `download-consumtion-cost` function
+The following code listing is an example of calling the `download-consumtion-cost` function. It will download a detailed report in a `csv` format (make sure to replace values with your deployment info):
+```sh
+curl -H "Content-Type: application/json" -X POST -d '{"filter":"<resource-group-name>","granularity":"Hourly"}' https://<app-service-name>.azurewebsites.net/api/download-consumtion-cost?code=<code>
+```
+
+> If the function is called from a mobile client or a JavaScript web app, we recommend that you add authentication to your Function using [App Service Authentication/Authorization](https://azure.microsoft.com/en-us/documentation/articles/app-service-authentication-overview/). The API key is insufficient for security purposes since it can be discovered by sniffing traffic or decompiling the client app.
+
+> The function takes a considerable amount of time (in seconds) to execute because it performs three API calls: **Log in**, **Get Rates** and **Get Consumption**. A real-world scenario would include use of caching and user sessions to avoid multiple logins and calls to the API.
+
+***The response***
+
+Response from the wrapper is a `csv` file having the following columns: 
+* name: meter name
+* rate: meter rate,
+* consumption: meter consumption
+* cost: cost of meter consumption
+* region: Azure region
+* meterDescription: textual description
+* usageStartTime: start time
+* usageEndTime: end time
+* resourceGroup
 
 ## Learn more
 
